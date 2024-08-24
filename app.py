@@ -101,6 +101,32 @@ def delete_researchpaper(researchpaper_id):
     except Exception as e:
         return str(e), 500
 
+@app.route('/researchpapers/<researchpaper_id>', methods=['PUT'])
+def update_researchpaper(researchpaper_id):
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute(
+            "UPDATE researchpapers SET title = %s, authors = %s, journal = %s, publication_date = %s, major_findings = %s WHERE id = %s RETURNING *", 
+            (
+                request.json['title'], 
+                request.json['authors'], 
+                request.json['journal'],
+                request.json['publication_date'],
+                request.json['major_findings'],
+                researchpaper_id
+            )
+        )
+
+        updated_researchpaper = cursor.fetchone()
+        if updated_researchpaper is None:
+            return "Research Article Not Found", 404
+        connection.commit()
+        connection.close()
+        return updated_researchpaper, 202
+    except Exception as e:
+        return str(e), 500
+
 
 
 # Run our application, by default on port 5000
