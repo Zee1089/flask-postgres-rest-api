@@ -73,7 +73,7 @@ def create_researchpaper():
 # Show route
 
 @app.route('/researchpapers/<researchpaper_id>', methods=['GET'])
-def show_pet(researchpaper_id):
+def show_researchpaper(researchpaper_id):
     try:
         connection = get_db_connection()
         cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -86,6 +86,22 @@ def show_pet(researchpaper_id):
         return researchpaper, 200
     except Exception as e:
         return str(e),500
+
+
+@app.route('/researchpapers/<researchpaper_id>', methods=['DELETE'])
+def delete_researchpaper(researchpaper_id):
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute("DELETE FROM researchpapers WHERE id = %s", (researchpaper_id,))
+        connection.commit()  # Commit the deletion
+        cursor.close()
+        connection.close()
+        return "Research Article deleted successfully", 204
+    except Exception as e:
+        return str(e), 500
+
+
 
 # Run our application, by default on port 5000
 if __name__ == '__main__':
