@@ -70,8 +70,22 @@ def create_researchpaper():
         return str(e), 500  # Return the error message with status 500 if something goes wrong
 
 
-  
+# Show route
 
+@app.route('/researchpapers/<researchpaper_id>', methods=['GET'])
+def show_pet(researchpaper_id):
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute("SELECT * FROM researchpapers WHERE id = %s", (researchpaper_id))
+        researchpaper = cursor.fetchone()
+        if researchpaper is None:
+            connection.close()
+            return "Research Article Not Found", 404
+        connection.close()
+        return researchpaper, 200
+    except Exception as e:
+        return str(e),500
 
 # Run our application, by default on port 5000
 if __name__ == '__main__':
