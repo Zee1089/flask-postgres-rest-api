@@ -1,5 +1,6 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, g
 from flask_cors import CORS
+from auth_middleware import token_required
 import jwt
 import bcrypt
 from dotenv import load_dotenv
@@ -52,6 +53,11 @@ def verify_token():
         return jsonify({"user": decoded_token})
     except Exception as error:
        return jsonify({"error": error.message})
+
+@app.route('/vip-lounge')
+@token_required
+def vip_lounge():
+    return f"Welcome to the party, {g.user['username']}"
     
 
 @app.route('/auth/signup', methods=['POST'])
